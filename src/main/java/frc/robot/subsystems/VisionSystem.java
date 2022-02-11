@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.Constants.Vision.comparisonConstants;
+import static frc.robot.Constants.Vision.lifecamCameraName;
+import static frc.robot.Constants.Vision.limelightCameraName;
+import static frc.robot.Constants.Vision.upperHubPipelineID;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,18 +22,15 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.surpriselib.SortByDistance;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 
 public class VisionSystem extends SubsystemBase implements Loggable {
   PhotonCamera CAM_limelight, CAM_lifecam;
   PhotonPipelineResult currentResult;
   boolean active = true;
   NetworkTable NT_photonvision, NT_limelight, NT_lifecam;
-  NetworkTableEntry photonVersionEntry;
   /** Creates a new VisionSystem. */
   public VisionSystem() {
     CAM_limelight = new PhotonCamera(limelightCameraName);
@@ -42,11 +42,12 @@ public class VisionSystem extends SubsystemBase implements Loggable {
     CAM_lifecam.setDriverMode(true);
 
     NT_photonvision = NetworkTableInstance.getDefault().getTable("photonvision");
-    photonVersionEntry = NT_photonvision.getEntry("version");
+    // THIS IS THE COPROCESSOR NOT FOUND FIX
+    NetworkTableEntry photonVersionEntry = NT_photonvision.getEntry("version");
     photonVersionEntry.setString("v2022.1.4");
+
     NT_limelight = NT_photonvision.getSubTable("limelight");
     NT_lifecam = NT_photonvision.getSubTable("Microsoft_LifeCam_HD-3000");
-
   }
 
   /**
