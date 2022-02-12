@@ -28,11 +28,11 @@ public class UnitConverter {
         return inchesToRotations(inchesPerSecond) * 60;
     }
 
-    public double encoderTicksToDegrees(int ticks) {
+    public static double encoderTicksToDegrees(Double ticks) {
         return ticks / (1 / Constants.degreesToFalconTicks);
     }
 
-    public double degreesToEncoderTicks(double degrees) {
+    public static double degreesToEncoderTicks(double degrees) {
         // 1 rot = 360 degrees
         // 1 rot = 2048 ticks
         // 1 degree = 1/360 rotation
@@ -46,7 +46,7 @@ public class UnitConverter {
         return degreesToEncoderTicks(Units.radiansToDegrees(radians));
     }
     
-    public double encoderTicksToRadians(int ticks) {
+    public double encoderTicksToRadians(double ticks) {
         return Units.degreesToRadians(encoderTicksToDegrees(ticks));
     }
 }

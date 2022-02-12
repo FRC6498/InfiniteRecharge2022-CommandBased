@@ -84,10 +84,11 @@ public final class Constants {
         public static final double turretPositionOffsetThreshold = 30;
         public static final double turretYaw_kP = 1;
         public static final double turretYaw_kD = 0;
-        public static final double turretTicksPerRotation = (2048*(40/10)*(40/20)*(314/40));
+        public static final double turretTicksPerRotation = 2048*(40/10)*(40/20)*(314/40);
         public static final double turretMaxPosition = 135+13.25;
         public static final double turretMinPosition = -135-13.25;
         public static final double turretSoftLimitOffset = 20;
+        public static final double turretHomingVelocityStopThreshold = 0.1;
 
     }
 

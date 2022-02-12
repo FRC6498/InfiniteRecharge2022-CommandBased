@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
 
 public class HomeTurret extends CommandBase {
@@ -22,7 +23,7 @@ public class HomeTurret extends CommandBase {
   @Override
   public void initialize() {
     DriverStation.reportWarning("HOMING STARTED", false);
-    turret.homed = false;
+    turret.homed = true;
     turret.centered = false;
     turret.setSoftLimitsEnable(false);
   }
@@ -30,17 +31,27 @@ public class HomeTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    turret.reset(Rotation2d.fromDegrees(-135));
     if (!turret.homed) {
       turret.openLoop(0.1);
+      // limit switch trigger
       if (turret.getForwardLimitSwitch()) {
-        turret.reset(Rotation2d.fromDegrees(135));   
+        turret.reset(Rotation2d.fromDegrees(135));
+        turret.openLoop(0);   
         turret.homed = true;   
       }
       if (turret.getReverseLimitSwitch()) {
         turret.reset(Rotation2d.fromDegrees(-135));
+        turret.openLoop(0);   
+        turret.homed = true;   
+      }
+      if (turret.getYawVelocityDegreesPerSecond() < Constants.Shooter.turretHomingVelocityStopThreshold) {
+        // fallback
+        turret.openLoop(0);
         turret.homed = true;
       }
-    } else {
+    }
+    if (turret.homed) {
       if (!turret.centered) {
         turret.setAngleGoal(Rotation2d.fromDegrees(0));
         if (Math.abs(turret.getAngle().getDegrees()) < 0.5) {
@@ -61,6 +72,6 @@ public class HomeTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return turret.centered;
+    return turret.centered || turret.enabled;
   }
 }

@@ -9,12 +9,14 @@ import static frc.robot.Constants.Shooter.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.surpriselib.UnitConverter;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -26,6 +28,7 @@ public class Turret extends SubsystemBase implements Loggable {
   public boolean homed = false;
   public boolean centered = false;
   double openLoopDemand;
+  public boolean enabled = true;
 
   public Turret() {
     yawMotor.configFactoryDefault();
@@ -34,11 +37,13 @@ public class Turret extends SubsystemBase implements Loggable {
     yawMotor.config_kP(0, turretYaw_kP);
     yawMotor.config_kI(0, 0);
     yawMotor.config_kD(0, turretYaw_kD);
-    yawMotor.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    //yawMotor.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
     yawMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     yawMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    yawMotor.setNeutralMode(NeutralMode.Brake);
   }
 
+  @Log.BooleanBox(name = "Forward Limit Switch")
   public boolean getForwardLimitSwitch() {
     if (yawMotor.isFwdLimitSwitchClosed() == 1) {
       return true;
@@ -60,6 +65,10 @@ public class Turret extends SubsystemBase implements Loggable {
     return yawMotor.getStatorCurrent();
   }
 
+  public double getYawVelocityDegreesPerSecond() {
+    return UnitConverter.encoderTicksToDegrees(yawMotor.getSelectedSensorVelocity());
+  }
+
   @Log(name = "Open Loop Demand")
   public double getOpenLoopDemand() {
     return openLoopDemand;
@@ -75,11 +84,11 @@ public class Turret extends SubsystemBase implements Loggable {
     // we need to convert the relative angle from PV into an absolute angle
     // convert angle target to encoder units
     //                                 add current rotation to make absolute           rotations                         ticks
+    angleGoal = angle;
 
     yawMotor.set(ControlMode.Position, yawMotor.getSelectedSensorPosition() + (angle.getRadians() / 2 * Math.PI) * turretTicksPerRotation);
   }
   public void reset(Rotation2d angle) {
-    
     yawMotor.setSelectedSensorPosition((angle.getRadians() / 2 * Math.PI) * turretTicksPerRotation);
   }
 
@@ -104,5 +113,18 @@ public class Turret extends SubsystemBase implements Loggable {
   @Log.BooleanBox(name = "Turret Centered")
   public boolean getTurretCentered() {
     return centered;
+  }
+
+  public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+  public boolean getEnabled() { return enabled; }
+
+  @Log(name = "Angle Goal (deg)")
+  public double getAngleGoalDegrees() {
+    return angleGoal.getDegrees();
+  }
+  @Log(name = "Current Angle (deg)")
+  public double getCurrentAngleDegrees() {
+    return getAngle().getDegrees();
   }
 }
