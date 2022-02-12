@@ -28,7 +28,7 @@ public class TurretYaw extends CommandBase implements Loggable {
     if (vision.hasTargets()) {
       yaw = vision.getTargetData()[0];
     }
-    turret.setAngleGoal(Rotation2d.fromDegrees(yaw));
+    turret.setRelativeAngleGoal(Rotation2d.fromDegrees(yaw));
   }
 
   // Returns true when the command should end.

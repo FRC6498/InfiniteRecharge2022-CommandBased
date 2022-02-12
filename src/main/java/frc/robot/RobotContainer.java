@@ -34,7 +34,7 @@ public class RobotContainer {
   //@Log
   //SendableChooser<Command> autoChooser = new SendableChooser<>();
   // controllers
-  //XboxController driver = new XboxController(Constants.Drive.DriverControllerId);
+  XboxController driver = new XboxController(Constants.Drive.DriverControllerId);
   // subsystems
   private final DriveBase driveBase = new DriveBase();
   private final Intake intake = new Intake();
@@ -57,11 +57,12 @@ public class RobotContainer {
     //driveBase.setDefaultCommand(arcadeCommand);
     //turret.setDefaultCommand(openT);
     //turret.setDefaultCommand(new frc.robot.commands.TurretYaw(turret, visionSystem));
-    turret.setDefaultCommand(new SequentialCommandGroup(
+    /*turret.setDefaultCommand(new SequentialCommandGroup(
       new HomeTurret(turret),
       new OpenLoopTurret(() -> 0, turret)
       ));
-
+    */
+    //turret.setDefaultCommand(new OpenLoopTurret(driver::getRightX, turret));
     // configure autos
     //autoChooser.setDefaultOption("Leave Tarmac & Stop", simplestAuto);
   }
@@ -76,7 +77,7 @@ public class RobotContainer {
     // button commands
     //new JoystickButton(driver, Button.kRightBumper.value).whenPressed(new InstantCommand(driveBase::toggleGear, driveBase));
     // start/stop intake
-    //new JoystickButton(driver, Button.kX.value).whenHeld(new StartEndCommand(intake::startIntakeMotor, intake::stopIntakeMotor, intake));
+    new JoystickButton(driver, Button.kX.value).whenHeld(new StartEndCommand(intake::startIntakeMotor, intake::stopIntakeMotor, intake));
     // set brake mode
     //new JoystickButton(driver, Button.kB.value).whenPressed(new InstantCommand(driveBase::toggleInverted, driveBase));
   }

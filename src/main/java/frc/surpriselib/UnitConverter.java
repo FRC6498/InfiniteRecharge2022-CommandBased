@@ -29,7 +29,7 @@ public class UnitConverter {
     }
 
     public static double encoderTicksToDegrees(Double ticks) {
-        return ticks / (1 / Constants.degreesToFalconTicks);
+        return ticks / (1 / Constants.degreesToTurretTicks);
     }
 
     public static double degreesToEncoderTicks(double degrees) {
@@ -38,7 +38,7 @@ public class UnitConverter {
         // 1 degree = 1/360 rotation
         // 1 degree = 2048 ticks / 360
         // 1 degree = 5.689 ticks
-        return degrees * Constants.degreesToFalconTicks;
+        return degrees * Constants.degreesToTurretTicks;
 
     }
 

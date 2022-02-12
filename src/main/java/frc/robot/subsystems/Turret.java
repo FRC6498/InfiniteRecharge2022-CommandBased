@@ -23,7 +23,7 @@ import io.github.oblarg.oblog.annotations.Log;
 public class Turret extends SubsystemBase implements Loggable {
   
   TalonFX yawMotor = new TalonFX(yawMotorCANId);
-  Rotation2d angleGoal = Rotation2d.fromDegrees(0);
+  Rotation2d angleGoal = Rotation2d.fromDegrees(135);
   double rotationError = 0.0;
   public boolean homed = false;
   public boolean centered = false;
@@ -38,31 +38,21 @@ public class Turret extends SubsystemBase implements Loggable {
     yawMotor.config_kI(0, 0);
     yawMotor.config_kD(0, turretYaw_kD);
     //yawMotor.configIntegratedSensorAbsoluteRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    yawMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    yawMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    yawMotor.setNeutralMode(NeutralMode.Brake);
+    yawMotor.setNeutralMode(NeutralMode.Coast);
   }
 
-  @Log.BooleanBox(name = "Forward Limit Switch")
-  public boolean getForwardLimitSwitch() {
-    if (yawMotor.isFwdLimitSwitchClosed() == 1) {
-      return true;
-    } else return false;
-  }
-
-  public boolean getReverseLimitSwitch() {
-    if (yawMotor.isRevLimitSwitchClosed() == 1) {
-      return true;
-    } else return false;
-  }
-
-  public void resetSensors() {
-    yawMotor.setSelectedSensorPosition(0);
+  public void resetSensors(double position) {
+    yawMotor.setSelectedSensorPosition(position);
   }
 
   @Log
   public double getYawMotorOutputCurrent() {
     return yawMotor.getStatorCurrent();
+  }
+
+  @Log
+  public double getPositionError() {
+    return rotationError;
   }
 
   public double getYawVelocityDegreesPerSecond() {
@@ -80,14 +70,22 @@ public class Turret extends SubsystemBase implements Loggable {
     //DriverStation.reportWarning(yawMotor.getLastError().toString(), false);
   }
 
-  public void setAngleGoal(Rotation2d angle) {
-    // we need to convert the relative angle from PV into an absolute angle
-    // convert angle target to encoder units
-    //                                 add current rotation to make absolute           rotations                         ticks
-    angleGoal = angle;
+  public void setAbsoluteAngleGoal(Rotation2d angle) {
+    double absolutePositionDegrees = angle.getDegrees();
+    double absolutePositionTicks = UnitConverter.degreesToEncoderTicks(absolutePositionDegrees);
+    //rotationError = angleGoal.getDegrees() - getAngle().getDegrees();
 
-    yawMotor.set(ControlMode.Position, yawMotor.getSelectedSensorPosition() + (angle.getRadians() / 2 * Math.PI) * turretTicksPerRotation);
+    //System.out.println("Angle Goal is " + angleGoal.getDegrees() + ", current angle is " + getAngle().getDegrees());
+    yawMotor.set(ControlMode.Position, absolutePositionTicks);
   }
+
+  public void setRelativeAngleGoal(Rotation2d angle) {
+    // convert to absolute
+    double absAngleDegrees = getAngle().getDegrees() + angle.getDegrees();
+    setAbsoluteAngleGoal(Rotation2d.fromDegrees(absAngleDegrees));
+    
+  }
+
   public void reset(Rotation2d angle) {
     yawMotor.setSelectedSensorPosition((angle.getRadians() / 2 * Math.PI) * turretTicksPerRotation);
   }

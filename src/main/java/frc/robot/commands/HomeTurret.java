@@ -23,7 +23,7 @@ public class HomeTurret extends CommandBase {
   @Override
   public void initialize() {
     DriverStation.reportWarning("HOMING STARTED", false);
-    turret.homed = true;
+    turret.homed = false;
     turret.centered = false;
     turret.setSoftLimitsEnable(false);
   }
@@ -31,30 +31,37 @@ public class HomeTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.reset(Rotation2d.fromDegrees(-135));
+    //System.out.println("WHAT");
     if (!turret.homed) {
+      System.out.println("HOMING");
       turret.openLoop(0.1);
       // limit switch trigger
       if (turret.getForwardLimitSwitch()) {
-        turret.reset(Rotation2d.fromDegrees(135));
+        turret.reset(Rotation2d.fromDegrees(270));
         turret.openLoop(0);   
-        turret.homed = true;   
+        turret.homed = true;
+        System.out.println("FORWARD SWITCH TRIGGERED");
       }
       if (turret.getReverseLimitSwitch()) {
-        turret.reset(Rotation2d.fromDegrees(-135));
+        turret.reset(Rotation2d.fromDegrees(0));
         turret.openLoop(0);   
         turret.homed = true;   
+        System.out.println("REVERSE SWITCH TRIGGERED");
       }
       if (turret.getYawVelocityDegreesPerSecond() < Constants.Shooter.turretHomingVelocityStopThreshold) {
         // fallback
         turret.openLoop(0);
-        turret.homed = true;
+        //turret.homed = true;
+        System.out.println("VELOCITY THRESHOLD TRIGGERED");
       }
     }
     if (turret.homed) {
       if (!turret.centered) {
-        turret.setAngleGoal(Rotation2d.fromDegrees(0));
-        if (Math.abs(turret.getAngle().getDegrees()) < 0.5) {
+        System.out.println("CENTERING");
+        turret.setAbsoluteAngleGoal(Rotation2d.fromDegrees(135));
+        
+        if (turret.getPositionError() < 0.5) {
+          System.out.println("CENTERED");
           turret.centered = true;
         }
       }
@@ -72,6 +79,6 @@ public class HomeTurret extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return turret.centered || turret.enabled;
+    return turret.centered;
   }
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
     public static final double degreesToFalconTicks = 5.689;
+    public static final double degreesToTurretTicks = 35.04;
 
     public static final class Drive {
 
@@ -82,9 +83,10 @@ public final class Constants {
         // Turret
         public static final int yawMotorCANId = 10;
         public static final double turretPositionOffsetThreshold = 30;
-        public static final double turretYaw_kP = 1;
+        public static final double turretYaw_kP = 0.8;
         public static final double turretYaw_kD = 0;
-        public static final double turretTicksPerRotation = 2048*(40/10)*(40/20)*(314/40);
+        public static final double turretTicksPerRotation = 2048.0*(40.0/10.0)*(40.0/20.0)*(314.0/40.0);
+        public static final double turretTicksRange = turretTicksPerRotation * 0.75;
         public static final double turretMaxPosition = 135+13.25;
         public static final double turretMinPosition = -135-13.25;
         public static final double turretSoftLimitOffset = 20;
