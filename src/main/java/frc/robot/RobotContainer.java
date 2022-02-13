@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveArcadeOpenLoop;
-import frc.robot.commands.HomeTurret;
 import frc.robot.commands.OpenLoopTurret;
+import frc.robot.commands.TurretYaw;
 import frc.robot.subsystems.DriveBase;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Turret;
@@ -55,14 +55,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     //driveBase.setDefaultCommand(arcadeCommand);
-    //turret.setDefaultCommand(openT);
-    //turret.setDefaultCommand(new frc.robot.commands.TurretYaw(turret, visionSystem));
-    /*turret.setDefaultCommand(new SequentialCommandGroup(
-      new HomeTurret(turret),
-      new OpenLoopTurret(() -> 0, turret)
-      ));
-    */
-    //turret.setDefaultCommand(new OpenLoopTurret(driver::getRightX, turret));
+    turret.setDefaultCommand(new TurretYaw(turret, visionSystem));
     // configure autos
     //autoChooser.setDefaultOption("Leave Tarmac & Stop", simplestAuto);
   }

@@ -36,7 +36,7 @@ public class VisionSystem extends SubsystemBase implements Loggable {
     CAM_limelight = new PhotonCamera(limelightCameraName);
     CAM_limelight.setDriverMode(false);
     CAM_limelight.setPipelineIndex(upperHubPipelineID);
-    CAM_limelight.setLED(VisionLEDMode.kOff);
+    CAM_limelight.setLED(VisionLEDMode.kOn);
 
     CAM_lifecam = new PhotonCamera(lifecamCameraName);
     CAM_lifecam.setDriverMode(true);
@@ -103,6 +103,10 @@ public class VisionSystem extends SubsystemBase implements Loggable {
     } else {
       CAM_limelight.setLED(VisionLEDMode.kOn);
     }
+  }
+
+  public int getTargetCount() {
+    return currentResult.getTargets().size();
   }
 
   @Override

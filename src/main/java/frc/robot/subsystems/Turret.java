@@ -74,7 +74,9 @@ public class Turret extends SubsystemBase implements Loggable {
     double absolutePositionDegrees = angle.getDegrees();
     double absolutePositionTicks = UnitConverter.degreesToEncoderTicks(absolutePositionDegrees);
     //rotationError = angleGoal.getDegrees() - getAngle().getDegrees();
-
+    //System.out.println("Absolute Yaw: " + absolutePositionDegrees);
+    //System.out.println("Desired Ticks: " + absolutePositionTicks);
+    //System.out.println("Position Error: " + yawMotor.getClosedLoopError());
     //System.out.println("Angle Goal is " + angleGoal.getDegrees() + ", current angle is " + getAngle().getDegrees());
     yawMotor.set(ControlMode.Position, absolutePositionTicks);
   }
@@ -95,22 +97,13 @@ public class Turret extends SubsystemBase implements Loggable {
   }
 
   public void setSoftLimitsEnable(boolean enable) {
+    enable = false;
     if (enable) {
       yawMotor.configForwardSoftLimitThreshold(turretMaxPosition - turretSoftLimitOffset);
       yawMotor.configReverseSoftLimitThreshold(turretMinPosition + turretSoftLimitOffset);
     } else {
       yawMotor.configSoftLimitDisableNeutralOnLOS(true, 50);
     }
-  }
-
-  @Log.BooleanBox(name = "Turret Homed")
-  public boolean getTurretHomed() {
-    return homed;
-  }
-
-  @Log.BooleanBox(name = "Turret Centered")
-  public boolean getTurretCentered() {
-    return centered;
   }
 
   public void setEnabled(boolean enabled) { this.enabled = enabled; }

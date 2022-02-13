@@ -25,9 +25,11 @@ public class TurretYaw extends CommandBase implements Loggable {
   @Override
   public void execute() {
     Double yaw = 0.0;
+    System.out.println("Target Count: " + vision.getTargetCount());
     if (vision.hasTargets()) {
       yaw = vision.getTargetData()[0];
     }
+    //System.out.println("Relative Yaw: " + yaw);
     turret.setRelativeAngleGoal(Rotation2d.fromDegrees(yaw));
   }
 
